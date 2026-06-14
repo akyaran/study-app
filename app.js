@@ -1,4 +1,5 @@
 const LEARNING_STORAGE_KEY = "studyApp.learning.v1";
+const DECK_URL = "questions.json?v=20260614-science-page1";
 const GRADES = ["again", "hard", "good", "easy"];
 const GRADE_LABELS = {
   again: "Again",
@@ -101,7 +102,7 @@ async function loadDeck() {
   state.learning = loadLearningData();
 
   try {
-    const response = await fetch("questions.json");
+    const response = await fetch(DECK_URL);
     if (!response.ok) throw new Error("questions.jsonを読み込めませんでした");
     state.deck = await response.json();
   } catch (error) {
