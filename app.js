@@ -150,20 +150,27 @@ function saveLearningData() {
 function prepareDeck(deck) {
   deck.categories = normalizeCategories(deck.categories);
   deck.questions = deck.questions.map((question, index) => normalizeQuestion(question, index, deck.categories));
+  const usedCategoryIds = new Set(deck.questions.map((question) => question.category));
+  deck.categories = deck.categories.filter((category) => usedCategoryIds.has(category.id));
+  if (deck.categories.length === 0) {
+    deck.categories = [{ id: "review", label: "復習" }];
+  }
 }
 
 function normalizeCategories(categories) {
-  const merged = new Map(DEFAULT_CATEGORIES.map((category) => [category.id, category]));
-
   if (Array.isArray(categories)) {
+    const normalized = [];
+    const seen = new Set();
     for (const category of categories) {
-      if (category && category.id && category.label) {
-        merged.set(category.id, { id: String(category.id), label: String(category.label) });
+      if (category && category.id && category.label && !seen.has(category.id)) {
+        normalized.push({ id: String(category.id), label: String(category.label) });
+        seen.add(category.id);
       }
     }
+    if (normalized.length > 0) return normalized;
   }
 
-  return Array.from(merged.values());
+  return DEFAULT_CATEGORIES;
 }
 
 function normalizeQuestion(question, index, categories) {
