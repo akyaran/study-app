@@ -30,6 +30,8 @@ const state = {
   index: 0,
   mode: "sequential",
   selectedCategoryId: "",
+  sessionAnsweredIds: new Set(),
+  completed: false,
   showingAnswer: false,
   hintOpen: false,
   hintViewed: false,
@@ -63,6 +65,7 @@ const elements = {
   explanationButton: document.querySelector("#explanationButton"),
   deckFileInput: document.querySelector("#deckFileInput"),
   questionSelect: document.querySelector("#questionSelect"),
+  restartButton: document.querySelector("#restartButton"),
   categoryList: document.querySelector("#categoryList"),
   currentCategoryLabel: document.querySelector("#currentCategoryLabel"),
   sequentialModeButton: document.querySelector("#sequentialModeButton"),
@@ -106,7 +109,7 @@ async function loadDeck() {
   }
 
   prepareDeck(state.deck);
-  selectInitialCategory();
+  resetToStart();
   render();
 }
 
@@ -207,11 +210,20 @@ function inferCategory(subject = "", categories) {
   return categories.some((category) => category.id === "review") ? "review" : categories[0].id;
 }
 
-function selectInitialCategory() {
-  const firstWithQuestions = state.deck.categories.find((category) => {
-    return state.deck.questions.some((question) => question.category === category.id);
-  });
-  state.selectedCategoryId = firstWithQuestions ? firstWithQuestions.id : state.deck.categories[0].id;
+function resetToStart() {
+  state.selectedCategoryId = "";
+  state.index = 0;
+  state.sessionAnsweredIds = new Set();
+  state.completed = false;
+  resetReveals();
+}
+
+function startCategory(categoryId) {
+  state.selectedCategoryId = categoryId;
+  state.index = 0;
+  state.sessionAnsweredIds = new Set();
+  state.completed = false;
+  resetReveals();
 }
 
 function currentQuestion() {
@@ -220,7 +232,7 @@ function currentQuestion() {
 }
 
 function filteredQuestions() {
-  if (!state.deck) return [];
+  if (!state.deck || !state.selectedCategoryId) return [];
   return state.deck.questions.filter((question) => question.category === state.selectedCategoryId);
 }
 
@@ -253,6 +265,16 @@ function render() {
   renderQuestionOptions(questions);
   renderHistory();
 
+  if (!state.selectedCategoryId) {
+    renderStartScreen();
+    return;
+  }
+
+  if (state.completed) {
+    renderCompleteScreen(questions.length);
+    return;
+  }
+
   if (!question) {
     renderEmptyQuestion();
     return;
@@ -269,21 +291,89 @@ function render() {
   elements.savedNote.textContent = state.savedMessage;
 
   const isAdaptive = state.mode === "adaptive";
+  const atLastQuestion = state.index === questions.length - 1;
   elements.prevButton.disabled = isAdaptive || state.index === 0;
-  elements.nextButton.disabled = !isAdaptive && state.index === questions.length - 1;
-  elements.nextButton.title = isAdaptive ? "次の復習問題" : "次の問題";
+  elements.nextButton.disabled = !isAdaptive && atLastQuestion && !state.gradeRecorded;
+  elements.nextButton.title = atLastQuestion ? "学習を終える" : isAdaptive ? "次の復習問題" : "次の問題";
   elements.hintButton.disabled = !hasContent(question.hints) || state.showingAnswer;
   elements.explanationButton.disabled = !hasContent(question.explanation);
   elements.toggleAnswerButton.disabled = false;
   elements.toggleAnswerButton.textContent = state.showingAnswer ? "問題へ" : "解答へ";
+  setNextButtonLabel(atLastQuestion ? "✓" : "›");
   elements.hintButton.textContent = state.hintOpen ? "ヒントを隠す" : "ヒント";
   elements.explanationButton.textContent = state.explanationOpen ? "解説を隠す" : "解説";
   elements.gradingNote.textContent = state.hintViewed
     ? "ヒントを見たので、Good/Easyを選んでも習熟度はHardとして記録します。"
     : "紙に書いた答えを見直して、でき具合を選んでください。";
   for (const button of elements.gradeButtons.querySelectorAll ? elements.gradeButtons.querySelectorAll("[data-grade]") : []) {
-    button.disabled = state.gradeRecorded;
+    button.disabled = !state.showingAnswer || state.gradeRecorded;
   }
+}
+
+function renderStartScreen() {
+  elements.questionTitle.textContent = "カテゴリを選んでください";
+  elements.currentNumber.textContent = "0";
+  elements.totalNumber.textContent = "0";
+  elements.subjectBadge.textContent = "未選択";
+  elements.pageMode.textContent = "開始前";
+  elements.questionSelect.disabled = true;
+  elements.contentArea.replaceChildren();
+
+  const panel = document.createElement("div");
+  panel.className = "message-screen";
+  panel.innerHTML = `
+    <h2>勉強したいカテゴリを選んでください</h2>
+    <p>上のカテゴリから、今日やりたい教科・分野を選ぶと問題が始まります。</p>
+  `;
+  elements.contentArea.append(panel);
+
+  elements.hintPanel.hidden = true;
+  elements.explanationPanel.hidden = true;
+  elements.gradingPanel.hidden = true;
+  elements.prevButton.disabled = true;
+  elements.nextButton.disabled = true;
+  elements.hintButton.disabled = true;
+  elements.toggleAnswerButton.disabled = true;
+  elements.explanationButton.disabled = true;
+  setNextButtonLabel("›");
+}
+
+function renderCompleteScreen(total) {
+  const category = currentCategory();
+  elements.questionTitle.textContent = "お疲れ様でした";
+  elements.currentNumber.textContent = String(total);
+  elements.totalNumber.textContent = String(total);
+  elements.subjectBadge.textContent = category ? category.label : "完了";
+  elements.pageMode.textContent = "完了";
+  elements.questionSelect.disabled = true;
+  elements.contentArea.replaceChildren();
+
+  const panel = document.createElement("div");
+  panel.className = "message-screen complete-screen";
+  panel.innerHTML = `
+    <h2>お疲れ様でした</h2>
+    <p>${category ? escapeHtml(category.label) : "このカテゴリ"}の問題を一通り終えました。</p>
+    <div class="message-actions">
+      <button type="button" class="primary" data-action="restart-same">同じカテゴリをもう一度</button>
+      <button type="button" class="secondary" data-action="restart-all">カテゴリ選択へ</button>
+    </div>
+  `;
+  elements.contentArea.append(panel);
+
+  elements.hintPanel.hidden = true;
+  elements.explanationPanel.hidden = true;
+  elements.gradingPanel.hidden = true;
+  elements.prevButton.disabled = true;
+  elements.nextButton.disabled = true;
+  elements.hintButton.disabled = true;
+  elements.toggleAnswerButton.disabled = true;
+  elements.explanationButton.disabled = true;
+  setNextButtonLabel("›");
+}
+
+function setNextButtonLabel(label) {
+  const icon = elements.nextButton.querySelector ? elements.nextButton.querySelector("span") : null;
+  if (icon) icon.textContent = label;
 }
 
 function renderEmptyQuestion() {
@@ -490,6 +580,7 @@ function recordGrade(grade) {
   };
 
   state.learning.attempts.push(attempt);
+  state.sessionAnsweredIds.add(question.id);
   updateQuestionStats(question.id, attempt);
   saveLearningData();
 
@@ -628,6 +719,13 @@ function goToNext() {
   const questions = filteredQuestions();
   if (questions.length === 0) return;
 
+  if (shouldCompleteSession(questions)) {
+    state.completed = true;
+    resetReveals();
+    render();
+    return;
+  }
+
   if (state.mode === "adaptive") {
     const current = currentQuestion();
     if (current) state.lastQuestionId = current.id;
@@ -638,6 +736,13 @@ function goToNext() {
 
   resetReveals();
   render();
+}
+
+function shouldCompleteSession(questions) {
+  if (state.mode === "adaptive") {
+    return state.sessionAnsweredIds.size >= questions.length;
+  }
+  return state.index >= questions.length - 1 && state.gradeRecorded;
 }
 
 function pickAdaptiveIndex(questions) {
@@ -719,6 +824,7 @@ elements.explanationButton.addEventListener("click", () => {
 
 elements.questionSelect.addEventListener("change", (event) => {
   state.index = Number(event.target.value);
+  state.completed = false;
   resetReveals();
   render();
 });
@@ -726,9 +832,7 @@ elements.questionSelect.addEventListener("change", (event) => {
 elements.categoryList.addEventListener("click", (event) => {
   const button = event.target.closest("[data-category-id]");
   if (!button) return;
-  state.selectedCategoryId = button.dataset.categoryId;
-  state.index = 0;
-  resetReveals();
+  startCategory(button.dataset.categoryId);
   render();
 });
 
@@ -736,6 +840,8 @@ for (const button of [elements.sequentialModeButton, elements.adaptiveModeButton
   button.addEventListener("click", () => {
     state.mode = button.dataset.mode;
     state.index = 0;
+    state.sessionAnsweredIds = new Set();
+    state.completed = false;
     resetReveals();
     render();
   });
@@ -748,6 +854,23 @@ elements.gradeButtons.addEventListener("click", (event) => {
 });
 
 elements.exportLearningButton.addEventListener("click", exportLearningData);
+
+elements.restartButton.addEventListener("click", () => {
+  resetToStart();
+  render();
+});
+
+elements.contentArea.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-action]");
+  if (!button) return;
+  const categoryId = state.selectedCategoryId;
+  if (button.dataset.action === "restart-same" && categoryId) {
+    startCategory(categoryId);
+  } else {
+    resetToStart();
+  }
+  render();
+});
 
 elements.importLearningInput.addEventListener("change", async (event) => {
   const [file] = event.target.files;
@@ -767,9 +890,7 @@ elements.deckFileInput.addEventListener("change", async (event) => {
     }
     state.deck = deck;
     prepareDeck(state.deck);
-    selectInitialCategory();
-    state.index = 0;
-    resetReveals();
+    resetToStart();
     render();
   } catch (error) {
     alert("問題データを読み込めませんでした。JSON形式を確認してください。");
