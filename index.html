@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>勉強アプリ</title>
-    <link rel="stylesheet" href="styles.css?v=20260614-1">
+    <link rel="stylesheet" href="styles.css?v=20260614-3">
   </head>
   <body>
     <main class="app">
@@ -28,6 +28,20 @@
         </div>
       </header>
 
+      <section class="study-settings" aria-label="学習設定">
+        <div class="mode-switch" role="radiogroup" aria-label="学習モード">
+          <button type="button" class="mode-button active" id="sequentialModeButton" data-mode="sequential" aria-pressed="true">順番</button>
+          <button type="button" class="mode-button" id="adaptiveModeButton" data-mode="adaptive" aria-pressed="false">復習優先</button>
+        </div>
+        <div class="category-panel">
+          <div class="panel-row">
+            <strong>カテゴリ切替</strong>
+            <span class="category-current" id="currentCategoryLabel">未選択</span>
+          </div>
+          <div class="category-list" id="categoryList"></div>
+        </div>
+      </section>
+
       <section class="viewer" aria-live="polite">
         <div class="meta-row">
           <span class="badge" id="subjectBadge">科目</span>
@@ -45,6 +59,38 @@
           <div class="panel-heading">解説</div>
           <div id="explanationArea"></div>
         </div>
+
+        <section class="grading-panel" id="gradingPanel" hidden>
+          <div>
+            <div class="panel-heading">自己採点</div>
+            <p class="grading-note" id="gradingNote">紙に書いた答えを見直して、でき具合を選んでください。</p>
+          </div>
+          <div class="grade-buttons" id="gradeButtons">
+            <button type="button" class="grade again" data-grade="again">Again</button>
+            <button type="button" class="grade hard" data-grade="hard">Hard</button>
+            <button type="button" class="grade good" data-grade="good">Good</button>
+            <button type="button" class="grade easy" data-grade="easy">Easy</button>
+          </div>
+          <p class="saved-note" id="savedNote" hidden></p>
+        </section>
+      </section>
+
+      <section class="history-panel" aria-label="今日の学習履歴">
+        <details id="historyDetails">
+          <summary>
+            <span>今日の履歴</span>
+            <span class="history-count" id="todayCount">0回</span>
+          </summary>
+          <div class="history-actions">
+            <button type="button" class="secondary small-button" id="exportLearningButton">エクスポート</button>
+            <label class="secondary small-button import-button">
+              インポート
+              <input type="file" id="importLearningInput" accept="application/json,.json">
+            </label>
+          </div>
+          <div class="history-summary" id="historySummary"></div>
+          <div class="history-log" id="historyLog"></div>
+        </details>
       </section>
 
       <nav class="controls" aria-label="問題操作">
@@ -60,7 +106,7 @@
       </nav>
     </main>
 
-    <script src="questions-data.js?v=20260614-1"></script>
-    <script src="app.js?v=20260614-1"></script>
+    <script src="questions-data.js?v=20260614-3"></script>
+    <script src="app.js?v=20260614-3"></script>
   </body>
 </html>
