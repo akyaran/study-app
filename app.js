@@ -1,5 +1,5 @@
 const LEARNING_STORAGE_KEY = "studyApp.learning.v1";
-const DECK_URL = "questions.json?v=20260614-angles-1";
+const DECK_URL = "questions.json?v=20260614-division-pages15-17";
 const GRADES = ["again", "hard", "good", "easy"];
 const GRADE_LABELS = {
   again: "Again",
