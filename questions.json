@@ -1,11 +1,24 @@
 {
   "title": "小学4年生 算数 わり算の筆算",
   "description": "問題集の写真から作成した、わり算の筆算・あまり・たしかめ算の練習問題です。",
+  "categories": [
+    { "id": "math", "label": "算数" },
+    { "id": "math-division", "label": "算数（割り算）" },
+    { "id": "math-angles", "label": "算数（角度）" },
+    { "id": "math-fractions", "label": "算数（分数）" },
+    { "id": "math-decimals", "label": "算数（小数）" },
+    { "id": "japanese", "label": "国語" },
+    { "id": "science", "label": "理科" },
+    { "id": "social-studies", "label": "社会" },
+    { "id": "english", "label": "英語" },
+    { "id": "review", "label": "復習" }
+  ],
   "questions": [
     {
       "id": "import-page9-q001",
       "title": "筆算のあなうめ 45 ÷ 6",
       "subject": "算数・わり算の筆算",
+      "category": "math-division",
       "source": "2026-05-22 18-36 ページ 9.JPEG",
       "prompt": [
         {
@@ -62,6 +75,7 @@
       "id": "import-page9-q002",
       "title": "筆算のあなうめ 64 ÷ 8",
       "subject": "算数・わり算の筆算",
+      "category": "math-division",
       "source": "2026-05-22 18-36 ページ 9.JPEG",
       "prompt": [
         {
@@ -122,6 +136,7 @@
       "id": "import-page9-q003",
       "title": "たしかめ算のあなうめ",
       "subject": "算数・わり算のたしかめ",
+      "category": "math-division",
       "source": "2026-05-22 18-36 ページ 9.JPEG",
       "prompt": [
         {
@@ -180,6 +195,7 @@
       "id": "import-page9-q004",
       "title": "チョコレートを分ける問題",
       "subject": "算数・わり算の文章題",
+      "category": "math-division",
       "source": "2026-05-22 18-36 ページ 9.JPEG",
       "prompt": [
         {
@@ -242,6 +258,7 @@
       "id": "import-page9-q005",
       "title": "あめを7人に分ける問題",
       "subject": "算数・わり算の文章題",
+      "category": "math-division",
       "source": "2026-05-22 18-36 ページ 9.JPEG",
       "prompt": [
         {
