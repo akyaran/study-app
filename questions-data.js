@@ -322,9 +322,9 @@ window.DEFAULT_DECK = {
         },
         {
           "type": "image",
-          "src": "images/science-temperature-page4.jpeg",
+          "src": "images/science-temperature-q1.jpeg",
           "alt": "気温のはかり方と百葉箱についての理科問題",
-          "caption": "元の問題集画像です。大問1を解いてください。"
+          "caption": "元の問題集画像から、大問1だけを切り出した画像です。"
         }
       ],
       "hints": [
@@ -367,9 +367,9 @@ window.DEFAULT_DECK = {
         },
         {
           "type": "image",
-          "src": "images/science-temperature-page4.jpeg",
+          "src": "images/science-temperature-q2.jpeg",
           "alt": "2日間の気温の変化を表すグラフと雲のようすを選ぶ問題",
-          "caption": "元の問題集画像です。大問2を解いてください。"
+          "caption": "元の問題集画像から、大問2だけを切り出した画像です。"
         }
       ],
       "hints": [
