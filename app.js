@@ -1,5 +1,5 @@
 const LEARNING_STORAGE_KEY = "studyApp.learning.v1";
-const DECK_URL = "questions.json?v=20260614-science-page1";
+const DECK_URL = "questions.json?v=20260614-angles-1";
 const GRADES = ["again", "hard", "good", "easy"];
 const GRADE_LABELS = {
   again: "Again",
@@ -29,7 +29,7 @@ const DEFAULT_CATEGORIES = [
 const state = {
   deck: null,
   index: 0,
-  mode: "sequential",
+  mode: "adaptive",
   selectedCategoryId: "",
   sessionAnsweredIds: new Set(),
   completed: false,
