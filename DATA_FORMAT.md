@@ -7,9 +7,11 @@
 以下の問題集から、勉強アプリ用のJSONを作ってください。
 
 - 出力はJSONのみ
-- ルートは `title`, `description`, `questions`
+- ルートは `title`, `description`, `categories`, `questions`
+- `categories` は `{ "id": "math-division", "label": "算数（割り算）" }` の配列にする
 - `questions` は配列
-- 各問題には `id`, `title`, `subject`, `prompt`, `hints`, `answer`, `explanation` を入れる
+- 各問題には `id`, `title`, `subject`, `category`, `prompt`, `hints`, `answer`, `explanation` を入れる
+- 各問題の `category` はカテゴリIDを1つ指定する。例: `"category": "math-division"`
 - `prompt`, `hints`, `answer`, `explanation` は、表示ブロックの配列にする
 - テキストは `{ "type": "text", "value": "..." }`
 - 数式や筆算は `{ "type": "math", "value": "..." }`
@@ -22,17 +24,39 @@
 - 解説が不要なら `explanation` は空配列にする
 - 答え合わせ機能は不要なので、選択肢や正誤判定用データは作らない
 
+カテゴリは、教科や分野ごとの「アプリ切り替え」のように使います。問題読み込み時にカテゴリを指定すると、そのカテゴリ内の問題として出題・集計されます。標準カテゴリは次の通りです。
+
+```json
+[
+  { "id": "math", "label": "算数" },
+  { "id": "math-division", "label": "算数（割り算）" },
+  { "id": "math-angles", "label": "算数（角度）" },
+  { "id": "math-fractions", "label": "算数（分数）" },
+  { "id": "math-decimals", "label": "算数（小数）" },
+  { "id": "japanese", "label": "国語" },
+  { "id": "science", "label": "理科" },
+  { "id": "social-studies", "label": "社会" },
+  { "id": "english", "label": "英語" },
+  { "id": "review", "label": "復習" }
+]
+```
+
 ## 最小例
 
 ```json
 {
   "title": "算数ドリル",
   "description": "分数の練習",
+  "categories": [
+    { "id": "math-fractions", "label": "算数（分数）" },
+    { "id": "review", "label": "復習" }
+  ],
   "questions": [
     {
       "id": "q001",
       "title": "分数のたし算",
       "subject": "算数",
+      "category": "math-fractions",
       "prompt": [
         { "type": "text", "value": "次の計算をしなさい。" },
         { "type": "math", "value": "1/3 + 1/6 = ?" }
