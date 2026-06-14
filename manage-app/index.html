@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>問題管理アプリ</title>
+    <link rel="stylesheet" href="styles.css?v=20260614-manage-1">
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Manage App</p>
+        <h1>問題管理</h1>
+      </div>
+      <div class="header-actions">
+        <button type="button" id="loadParentDeckButton">既存問題を読み込み</button>
+        <label class="file-button">
+          JSON読込
+          <input type="file" id="importCatalogInput" accept="application/json,.json">
+        </label>
+        <button type="button" id="exportButton">エクスポート</button>
+        <label class="file-button">
+          復元
+          <input type="file" id="importBackupInput" accept="application/json,.json">
+        </label>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="panel summary-panel" aria-label="学習状況">
+        <div class="metric">
+          <span class="metric-label">問題数</span>
+          <strong id="totalCount">0</strong>
+        </div>
+        <div class="metric">
+          <span class="metric-label">間違いあり</span>
+          <strong id="wrongCount">0</strong>
+        </div>
+        <div class="metric">
+          <span class="metric-label">今日の記録</span>
+          <strong id="todayCount">0</strong>
+        </div>
+        <div class="metric">
+          <span class="metric-label">おすすめ</span>
+          <strong id="recommendedCount">0</strong>
+        </div>
+      </section>
+
+      <section class="toolbar panel" aria-label="表示条件">
+        <label>
+          カテゴリ
+          <select id="categoryFilter"></select>
+        </label>
+        <label>
+          プリント
+          <select id="sourceFilter"></select>
+        </label>
+        <label class="search-field">
+          検索
+          <input type="search" id="searchInput" placeholder="ページ・番号・問題名">
+        </label>
+        <label>
+          表示
+          <select id="statusFilter">
+            <option value="all">すべて</option>
+            <option value="wrong">間違いあり</option>
+            <option value="due">今日やる候補</option>
+            <option value="fresh">未チェック</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="layout">
+        <aside class="panel recommendation-panel">
+          <div class="section-heading">
+            <h2>今日やる候補</h2>
+            <button type="button" id="refreshRecommendationsButton">更新</button>
+          </div>
+          <ol id="recommendationList" class="recommendation-list"></ol>
+        </aside>
+
+        <section class="panel list-panel">
+          <div class="section-heading">
+            <h2>問題リスト</h2>
+            <div class="compact-actions">
+              <button type="button" id="markVisiblePlannedButton">表示中を今日やる</button>
+              <button type="button" id="clearFiltersButton">条件クリア</button>
+            </div>
+          </div>
+          <div id="emptyState" class="empty-state">
+            <h2>問題リストを読み込んでください</h2>
+            <p>既存の勉強アプリの問題データ、または読み取りAIで作ったJSONを読み込むと、プリント別にチェックできます。</p>
+          </div>
+          <div id="problemGroups" class="problem-groups"></div>
+        </section>
+      </section>
+
+      <section class="panel history-panel">
+        <div class="section-heading">
+          <h2>今日のチェック履歴</h2>
+          <button type="button" id="clearTodayButton">今日の表示をクリア</button>
+        </div>
+        <div id="todayHistory" class="history-list"></div>
+      </section>
+    </main>
+
+    <template id="problemRowTemplate">
+      <article class="problem-row">
+        <div class="problem-main">
+          <div class="problem-title-line">
+            <span class="problem-number"></span>
+            <h3></h3>
+          </div>
+          <p class="problem-meta"></p>
+          <p class="problem-note"></p>
+        </div>
+        <div class="problem-stats">
+          <span class="badge attempts"></span>
+          <span class="badge wrongs"></span>
+          <span class="badge score"></span>
+        </div>
+        <div class="problem-actions">
+          <button type="button" data-action="correct">できた</button>
+          <button type="button" data-action="wrong" class="danger">間違い</button>
+          <button type="button" data-action="planned">今日やる</button>
+          <button type="button" data-action="reset" class="ghost">リセット</button>
+        </div>
+      </article>
+    </template>
+
+    <script src="app.js?v=20260614-manage-1"></script>
+  </body>
+</html>
