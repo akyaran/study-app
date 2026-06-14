@@ -38,13 +38,15 @@ button {
   margin: 0 auto;
   padding: 22px;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
   gap: 16px;
 }
 
 .topbar,
 .viewer,
-.controls {
+.controls,
+.study-settings,
+.history-panel {
   background: var(--surface);
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
@@ -63,6 +65,87 @@ button {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.study-settings {
+  border-radius: 8px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.mode-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 8px;
+  background: #ebe5d8;
+}
+
+.mode-button {
+  min-height: 44px;
+  padding: 0 14px;
+  background: transparent;
+  color: var(--muted);
+}
+
+.mode-button.active {
+  background: var(--accent);
+  color: white;
+}
+
+.category-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.panel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.text-button {
+  min-height: 36px;
+  padding: 0 10px;
+  background: transparent;
+  color: var(--accent);
+  font-weight: 900;
+}
+
+.category-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.category-current {
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.category-chip {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #fbfaf6;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.category-chip.active {
+  border-color: var(--accent);
+  background: #e4efe9;
+  color: var(--accent-strong);
 }
 
 .file-button {
@@ -301,6 +384,140 @@ h1 {
   font-weight: 900;
 }
 
+.grading-panel {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid #cbd8d2;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  background: #f8fbf9;
+}
+
+.grading-note,
+.saved-note {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.saved-note {
+  color: var(--accent-strong);
+}
+
+.grade-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.grade {
+  color: white;
+}
+
+.grade.again {
+  background: #9d3b35;
+}
+
+.grade.hard {
+  background: #b85f24;
+}
+
+.grade.good {
+  background: #236b5d;
+}
+
+.grade.easy {
+  background: #315c9a;
+}
+
+.history-panel {
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.history-panel summary {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.history-count {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #ebe5d8;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.history-actions {
+  margin: 12px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.small-button {
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.import-button input {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  opacity: 0;
+}
+
+.history-summary,
+.history-log {
+  display: grid;
+  gap: 8px;
+}
+
+.history-log {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.summary-row,
+.log-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) auto auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfaf6;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.log-row {
+  grid-template-columns: 64px minmax(160px, 1fr) auto auto auto;
+}
+
+.summary-row strong,
+.log-row strong {
+  color: var(--ink);
+}
+
+.empty-history {
+  margin: 0;
+  color: var(--muted);
+}
+
 .controls {
   position: sticky;
   bottom: 12px;
@@ -363,8 +580,21 @@ button:not(:disabled):active {
     flex-wrap: wrap;
   }
 
+  .study-settings {
+    grid-template-columns: 1fr;
+  }
+
   .viewer {
     padding: 16px;
+  }
+
+  .grade-buttons {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .summary-row,
+  .log-row {
+    grid-template-columns: 1fr;
   }
 
   .controls {
